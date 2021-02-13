@@ -5,6 +5,7 @@
 
 #ifndef __STRINGREG_H_LOADED__
 #define __STRINGREG_H_LOADED__
+#include <string>
 
 namespace cab {
 

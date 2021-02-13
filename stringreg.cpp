@@ -1,7 +1,7 @@
 #include "stringreg.h"
 
 std::string
-cab::translateeol(std::string &str)
+cab::translateeol(const std::string &str)
 {
   std::string result;
   result.reserve(str.length());
@@ -13,10 +13,10 @@ cab::translateeol(std::string &str)
 	state = 1;
 	break;
       case 1:
-	result.append('\n');
+	result.append(1u,'\n');
 	break;
       case 2:
-	result.append('\n');
+	result.append(1u,'\n');
 	state = 0;
 	break;
       }
@@ -28,18 +28,19 @@ cab::translateeol(std::string &str)
 	break;
       case 1: // \r\n -> \n
 	state = 0;
-	result.append('\n');
+	result.append(1u,'\n');
 	break;
       case 2:
-	result.append('\n');
+	result.append(1u,'\n');
 	break;
+      }
     }
     else {
       if ((1 == state) || (2 == state)) {
-	result.append('\n');
+	result.append(1u,'\n');
 	state = 0;
       }
-      result.append(ch);
+      result.append(1u,ch);
     }
   }
 }
