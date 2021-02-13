@@ -29,3 +29,10 @@ include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 blt_add_library(NAME cabrillo
 		HEADERS stringreg.h
 		SOURCES stringreg.cpp)
+
+blt_add_executable(NAME cabtests
+                   SOURCES cabtests.cpp
+		   DEPENDS_ON cabrillo gtest)
+
+blt_add_test(NAME cabtests
+             COMMAND cabtests)
