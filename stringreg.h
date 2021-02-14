@@ -13,6 +13,14 @@ namespace cab {
  * @brief convert the end of line convention to only newline
  */
 std::string translateeol(const std::string &str);
+
+std::string removeSpaceBeforeTags(const std::string &str);
+
+/**
+ * @brief if there are overflow lines that wrapped
+ *        try to fix them
+ */
+std::string fixWrappedLines(const std::string &str);
 }
 
 #endif /*  __STRINGREG_H_LOADED__ */

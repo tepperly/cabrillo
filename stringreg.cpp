@@ -1,4 +1,5 @@
 #include "stringreg.h"
+#include <regex>
 
 std::string
 cab::translateeol(const std::string &str)
@@ -47,4 +48,19 @@ cab::translateeol(const std::string &str)
     result.push_back('\n');
   }
   return result;
+}
+
+std::string
+cab::removeSpaceBeforeTags(const std::string &str)
+{
+  static const std::regex leadingSpace("(^|\n)[ \\t]+([a-z]{1,}(-[a-z]+)*:)",
+                                       std::regex::ECMAScript | std::regex::icase |
+                                       std::regex::optimize);
+  return std::regex_replace(str, leadingSpace, "$1$2");
+}
+
+std::string
+cab::fixWrappedLines(const std::string &str)
+{
+  return str;
 }

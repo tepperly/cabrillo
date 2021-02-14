@@ -27,5 +27,13 @@ TEST(CabrilloBasics,NewlineTests)
       EXPECT_EQ(expectedResult, cab::translateeol(str));
     }
   }
-  
+}
+
+TEST(CabrilloBasics,SpaceLeadingTags)
+{
+  const std::string expectedResults=
+    "START-OF-LOG: 2.0\nARRL-SECTION: EB\nCALLSIGN: W1AW\nX-CQP-CALLSIGN: W1AW\nQSO:\nEND-OF-LOG:\n";
+  const std::string input=
+    " START-OF-LOG: 2.0\n  ARRL-SECTION: EB\n      CALLSIGN: W1AW\n \t   X-CQP-CALLSIGN: W1AW\n  QSO:\n     END-OF-LOG:\n";
+  EXPECT_EQ(expectedResults,cab::removeSpaceBeforeTags(input));
 }
