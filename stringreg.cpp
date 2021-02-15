@@ -53,7 +53,7 @@ cab::translateeol(const std::string &str)
 std::string
 cab::removeSpaceBeforeTags(const std::string &str)
 {
-  static const std::regex leadingSpace("(^|\n)[ \\t]+([a-z]{1,}(-[a-z]+)*:)",
+  static const std::regex leadingSpace("(^|\n)[ \\t]+([a-z]+(-[a-z]+)*:)",
                                        std::regex::ECMAScript | std::regex::icase |
                                        std::regex::optimize);
   return std::regex_replace(str, leadingSpace, "$1$2");
@@ -62,5 +62,8 @@ cab::removeSpaceBeforeTags(const std::string &str)
 std::string
 cab::fixWrappedLines(const std::string &str)
 {
-  return str;
+  static const std::regex lineEndWithNoTag("\\n(?![a-z]+(-[a-z]+)*:)",
+                                           std::regex::ECMAScript | std::regex::icase |
+                                           std::regex::optimize);
+  return std::regex_replace(str, lineEndWithNoTag, "");
 }
