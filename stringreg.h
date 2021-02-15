@@ -21,6 +21,11 @@ std::string removeSpaceBeforeTags(const std::string &str);
  *        try to fix them
  */
 std::string fixWrappedLines(const std::string &str);
+
+/**
+ * @brief remove any X-QSO: tag lines
+ */
+std::string removeXQSOLines(const std::string &str);
 }
 
 #endif /*  __STRINGREG_H_LOADED__ */

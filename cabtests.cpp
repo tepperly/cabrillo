@@ -51,3 +51,10 @@ TEST(CabrilloBasics, fixWrappedLines)
       EXPECT_EQ(cab::fixWrappedLines(str), expectedResults);
     }
 }
+
+TEST(CabrilloBasics,RemoveXQSOLines)
+{
+  const std::string input("QSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA  K3AFZ         0001 PA    \nX-QSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA  K4FTU         0001 NC    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0003 TULA  K9DP          0001 IL    \n");
+  const std::string expected("QSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA  K3AFZ         0001 PA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0003 TULA  K9DP          0001 IL    \n");
+  EXPECT_EQ(cab::removeXQSOLines(input), expected);
+}

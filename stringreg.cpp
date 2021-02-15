@@ -60,6 +60,16 @@ cab::removeSpaceBeforeTags(const std::string &str)
 }
 
 std::string
+cab::removeXQSOLines(const std::string &str)
+{
+  static const std::regex xqsoLine("(^|\n)x-qso:.*\n",
+                                   std::regex::ECMAScript | std::regex::icase |
+                                   std::regex::optimize);
+  return std::regex_replace(str, xqsoLine, "$1");
+  
+}
+
+std::string
 cab::fixWrappedLines(const std::string &str)
 {
   static const std::regex lineEndWithNoTag("\\n(?![a-z]+(-[a-z]+)*:)",
