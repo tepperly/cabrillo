@@ -36,3 +36,7 @@ blt_add_executable(NAME cabtests
 
 blt_add_test(NAME cabtests
              COMMAND cabtests)
+
+blt_add_code_checks(PREFIX cabrillo
+  SOURCES cabtests.cpp stringreg.h stringreg.cpp
+  ASTYLE_CFG_FILE ${CMAKE_SOURCE_DIR}/.astyle)

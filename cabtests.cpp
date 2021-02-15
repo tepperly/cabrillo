@@ -21,7 +21,7 @@ TEST(CabrilloBasics,NewlineTests)
       "\n\r\n\r\n\r\n\r\n\r",
       "\r\n\r\n\r\n\r\n\r\n",
       "\r\r\r\r\r",
-       expectedResult
+      expectedResult
     };
     for (const auto &str : testSrcs) {
       EXPECT_EQ(expectedResult, cab::translateeol(str));
@@ -42,14 +42,14 @@ TEST(CabrilloBasics, fixWrappedLines)
 {
   static const std::string expectedResults=
     "NAME: Tom Epperly\nCATEGORY: SINGLE-OP ALL HIGH SSB\nADDRESS: Livermore, CA\nX-CQP-CALLSIGN: NS6T\nQSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA  K3AFZ         0001 PA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA  K4FTU         0001 NC    ";
-    const std::string testSrcs[] {
-      expectedResults,                                
-      "NAME: Tom \nEpperly\nCATEGORY: SINGLE-OP ALL HIGH SSB\nADDRESS: Livermore, CA\nX-CQP-CALLSIGN: NS6T\nQSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA  K3AFZ         0001 \nPA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA  K4FTU         0001\n NC    \n",
-      "NAME: Tom \nEpperly\nCATEGORY: SINGLE-OP A\nLL HIGH SSB\nADDRESS: Livermore\n, CA\nX-CQP-CALLSIGN: NS6T\nQSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA\n  K3AFZ         0001 \nPA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA \n K4FTU         0001\n NC    \n"
-    };
-    for(const auto &str : testSrcs) {
-      EXPECT_EQ(cab::fixWrappedLines(str), expectedResults);
-    }
+  const std::string testSrcs[] {
+    expectedResults,
+    "NAME: Tom \nEpperly\nCATEGORY: SINGLE-OP ALL HIGH SSB\nADDRESS: Livermore, CA\nX-CQP-CALLSIGN: NS6T\nQSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA  K3AFZ         0001 \nPA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA  K4FTU         0001\n NC    \n",
+    "NAME: Tom \nEpperly\nCATEGORY: SINGLE-OP A\nLL HIGH SSB\nADDRESS: Livermore\n, CA\nX-CQP-CALLSIGN: NS6T\nQSO: 14332 PH 2020-10-03 1601 NS6T          0001 TULA\n  K3AFZ         0001 \nPA    \nQSO: 14332 PH 2020-10-03 1601 NS6T          0002 TULA \n K4FTU         0001\n NC    \n"
+  };
+  for(const auto &str : testSrcs) {
+    EXPECT_EQ(cab::fixWrappedLines(str), expectedResults);
+  }
 }
 
 TEST(CabrilloBasics,RemoveXQSOLines)

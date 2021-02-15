@@ -1,0 +1,7 @@
+style=stroustrup
+indent=spaces=2
+align-pointer=name
+align-reference=name
+break-closing-braces
+break-elseifs
+add-braces
