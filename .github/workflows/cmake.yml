@@ -12,8 +12,27 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
-
+    name: ${ { matrix.config.name } }
+    runs-on: ${ { matrix.config.os } }
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+          name: "Ubuntu Latest GCC",
+          os: ubuntu-latest,
+          build_type: "Release", cc: "gcc", cxx: "g++"
+          }
+          - {
+          name: "Ubuntu Latest GCC",
+          os: ubuntu-latest,
+          build_type: "Release", cc: "clang", cxx: "clang++"
+          }
+          - {
+          name: "macOS Latest Clang",
+          os: macos-latest,
+          build_type: "Release", cc: "clang", cxx: "clang++"
+          }
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
