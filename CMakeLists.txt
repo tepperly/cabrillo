@@ -25,18 +25,22 @@ if (NOT BLT_CXX_STD)
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+set(CAB_LIBRARY_SRCS stringreg.cpp tabletext.cpp)
+set(CAB_LIBRARY_HDRS stringreg.h tabletext.h)
 
 blt_add_library(NAME cabrillo
-		HEADERS stringreg.h
-		SOURCES stringreg.cpp)
+		HEADERS ${CAB_LIBRARY_HDRS}
+		SOURCES ${CAB_LIBRARY_SRCS})
+
+set(CAB_TEST_SRCS cabtests.cpp)
 
 blt_add_executable(NAME cabtests
-                   SOURCES cabtests.cpp
+                   SOURCES ${CAB_TEST_SRCS}
 		   DEPENDS_ON cabrillo gtest)
 
 blt_add_test(NAME cabtests
              COMMAND cabtests)
 
 blt_add_code_checks(PREFIX cabrillo
-  SOURCES cabtests.cpp stringreg.h stringreg.cpp
+  SOURCES ${CAB_LIBRARY_HDRS} ${CAB_LIBRARY_SRCS} ${CAB_TEST_SRCS}
   ASTYLE_CFG_FILE ${CMAKE_SOURCE_DIR}/.astyle)
