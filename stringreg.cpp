@@ -78,3 +78,18 @@ cab::fixWrappedLines(const std::string &str)
       std::regex::optimize);
   return std::regex_replace(str, lineEndWithNoTag, "");
 }
+
+std::string
+cab::trim(const std::string &str)
+{
+  static const std::string whitespace(" \t\n\r\f\v");
+  const std::size_t start(str.find_first_not_of(whitespace));
+  if (std::string::npos != start) {
+    const std::size_t end(str.find_last_not_of(whitespace));
+    if (std::string::npos != end) {
+      return str.substr(start, 1u+end-start);
+    }
+  }
+  // otherwise it's all space
+  return "";
+}

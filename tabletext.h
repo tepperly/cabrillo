@@ -37,6 +37,13 @@ public:
    */
   explicit TableText(const char *multilineText);
 
+  /**
+   * @brief Convert the lines of text into a collection of separated
+   *        fields based on the whitespace of the table.
+   */
+  std::vector<std::vector<std::string>>
+                                     tabulate(unsigned minCols=0u) const;
+
   std::size_t getNumRows() const noexcept
   {
     return d_textLines.size();
@@ -57,6 +64,10 @@ private:
   void
   addSubstring(const char *const begin, const char *const end);
 
+  /// Return all the unique space counts
+  std::vector<int>
+  uniqueSpaceCounts() const;
+
   /**
    * @brief The table text where each element of the std::vector is a line of text
    *
@@ -71,6 +82,18 @@ private:
 
   /// The maximum number of characters in any particular line
   std::size_t d_maxWidth;
+
+  struct ColumnRange {
+    std::size_t begin;          // the first column
+    std::size_t end;            // one past the last column
+  };
+
+  void
+  findColumns(const int                 minSpaceForColEnd,
+              std::vector<ColumnRange> &table) const;
+
+  std::vector<std::vector<std::string>>
+                                     copyColumns(const std::vector<ColumnRange> &table) const;
 
 };
 

@@ -606,5 +606,6 @@ TEST(CabrilloBasics, TableTests)
     EXPECT_EQ(test.numRows, t2.getNumRows());
     EXPECT_EQ(test.numRows, c1.getNumRows());
     EXPECT_EQ(test.numRows, c2.getNumRows());
+    auto result = t1.tabulate(11u);
   }
 }

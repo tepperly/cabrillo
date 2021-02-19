@@ -26,6 +26,11 @@ std::string fixWrappedLines(const std::string &str);
  * @brief remove any X-QSO: tag lines
  */
 std::string removeXQSOLines(const std::string &str);
+
+/**
+ * @brief trim leading and trailing whitespace from string
+ */
+std::string trim(const std::string &str);
 }
 
 #endif /*  __STRINGREG_H_LOADED__ */
