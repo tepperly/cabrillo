@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "stringreg.h"
 #include "tabletext.h"
+#include <cstring>
 
 TEST(CabrilloBasics,NewlineTests)
 {
@@ -589,7 +590,7 @@ QSO: 28000 CW 2014-10-05 2158 W1AW       947 ORAN      N9AFU       21 IN\n\
 QSO: 28000 CW 2014-10-05 2159 W1AW       948 ORAN      WA6KHK    1329 RIVE\n\
 QSO: 28000 CW 2014-10-05 2159 W1AW       949 ORAN      N2BJ       744 IL\n",
     518, 11, { 0, 5, 11, 14, 25, 30, 41, 45, 55, 65, 70 },
-    { 3, 9, 13, 22, 28, 39, 43, 52, 62, 67, 85}
+    { 3, 9, 12, 23, 28, 39, 43, 53, 64, 68, 96}
   }
 };
 
@@ -609,5 +610,20 @@ TEST(CabrilloBasics, TableTests)
     auto result = t1.tabulate(11u);
     EXPECT_EQ(result.size(),test.numRows);
     EXPECT_EQ(result[0].size(),11u);
+    const char *wholeText(test.text.c_str());
+    for(std::size_t i=0u; i < result.size() && i < test.numRows; ++i) {
+      const char *const nextNewline(std::strchr(wholeText, '\n'));
+      const char *const nextEnd(nextNewline ? nextNewline : (wholeText+std::strlen(wholeText)));
+      const std::string line(wholeText, nextEnd);
+      const std::vector<std::string> &current(result.at(i));
+      for(std::size_t j=0u; j < test.columnStarts.size(); ++j) {
+        std::size_t start(test.columnStarts.at(j));
+        std::size_t end(test.columnEnds.at(j)+1);
+        const std::string expected((start < line.length()) ?
+                                   cab::trim(line.substr(start, end-start)) : "");
+        EXPECT_EQ(expected, current.at(j));
+      }
+      wholeText = (nextNewline ? (nextNewline+1) : wholeText);
+    }
   }
 }
