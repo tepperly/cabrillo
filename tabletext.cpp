@@ -138,8 +138,9 @@ TableText::findColumns(const int                minSpaceForColEnd,
           }
         }
         else {
-          if ((d_spaceCounts[pos] <= startColumnThreshold)  ||
-              (d_spaceCounts[pos] == numLines)) {
+          if ((pos < d_maxWidth) &&
+              ((d_spaceCounts[pos] <= startColumnThreshold)  ||
+               (d_spaceCounts[pos] == numLines))) {
             break;
             ++pos;
           }
