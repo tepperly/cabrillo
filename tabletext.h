@@ -31,11 +31,16 @@ public:
   explicit TableText(const char *multilineText);
 
   /**
+   * @brief Type used to hold the array of array of column fields.
+   */
+  using RowAndColumnList = std::vector<std::vector<std::string>>;
+
+  /**
    * @brief Convert the lines of text into a collection of separated
    *        fields based on the whitespace of the table.
    */
-  std::vector<std::vector<std::string>>
-                                     tabulate(unsigned minCols=0u) const;
+  RowAndColumnList
+  tabulate(unsigned minCols=0u) const;
 
   std::size_t getNumRows() const noexcept
   {
@@ -81,12 +86,12 @@ private:
   findColumns(const int                 minSpaceForColEnd,
               std::vector<ColumnRange> &table) const;
 
-  std::vector<std::string>
+  RowAndColumnList::value_type
   fieldsFromLine(const std::vector<ColumnRange> &table,
                  const std::string &line) const;
 
-  std::vector<std::vector<std::string>>
-                                     copyColumns(const std::vector<ColumnRange> &table) const;
+  RowAndColumnList
+  copyColumns(const std::vector<ColumnRange> &table) const;
 
 };
 

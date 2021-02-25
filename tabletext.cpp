@@ -21,6 +21,18 @@ TableText::TableText(const char *multilineText)
   countSpaces();
 }
 
+namespace {
+/// short lines are treated like they are padded with spaces at the end
+void
+padShortLines(std::vector<int> &spaces, std::size_t curCol)
+{
+  while (curCol < spaces.size()) {
+    ++spaces[curCol];
+    ++curCol;
+  }
+}
+}
+
 void
 TableText::countSpaces()
 {
@@ -29,14 +41,11 @@ TableText::countSpaces()
   d_spaceCounts.reserve(128u);
   for(const char ch : d_text) { // iterate through whole string
     if ('\n' == ch) {
+      padShortLines(d_spaceCounts, curCol);
       // increment row count and reset for next line
-      while(curCol < d_spaceCounts.size()) {
-        ++d_spaceCounts[curCol];
-        ++curCol;
-      }
       ++d_numRows;
       curCol = 0u;
-      missingNewline = true;
+      missingNewline = false;
     }
     else {
       if (curCol >= d_spaceCounts.size()) {
@@ -46,10 +55,10 @@ TableText::countSpaces()
         ++d_spaceCounts[curCol];
       }
       ++curCol;
-      missingNewline = false;
+      missingNewline = true;
     }
   }
-  if (!missingNewline) {
+  if (missingNewline) {
     ++d_numRows;
   }
 }
@@ -125,7 +134,7 @@ TableText::findColumns(const int                minSpaceForColEnd,
   }
 }
 
-std::vector<std::string>
+TableText::RowAndColumnList::value_type
 TableText::fieldsFromLine(const std::vector<ColumnRange> &table,
                           const std::string &line) const
 {
@@ -140,11 +149,11 @@ TableText::fieldsFromLine(const std::vector<ColumnRange> &table,
       columnList.push_back(std::string());
     }
   }
-  return std::move(columnList);
+  return columnList;
 }
 
-std::vector<std::vector<std::string>>
-                                   TableText::copyColumns(const std::vector<ColumnRange> &table) const
+TableText::RowAndColumnList
+TableText::copyColumns(const std::vector<ColumnRange> &table) const
 {
   std::vector<std::vector<std::string>> result;
   result.reserve(d_numRows);
@@ -156,5 +165,5 @@ std::vector<std::vector<std::string>>
   if (cur < d_text.size()) {
     result.push_back(std::move(fieldsFromLine(table, d_text.substr(cur))));
   }
-  return std::move(result);
+  return result;
 }
