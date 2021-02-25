@@ -65,6 +65,7 @@ struct CabTableTest {
   std::string                text;
   unsigned                   numRows;
   unsigned                   numColumns;
+  unsigned                   maxWidth;
   std::vector<std::size_t>   columnStarts;
   std::vector<std::size_t>   columnEnds;
 };
@@ -589,7 +590,7 @@ QSO: 28000 CW 2014-10-05 2157 W1AW       946 ORAN      N1KW       185 IL\n\
 QSO: 28000 CW 2014-10-05 2158 W1AW       947 ORAN      N9AFU       21 IN\n\
 QSO: 28000 CW 2014-10-05 2159 W1AW       948 ORAN      WA6KHK    1329 RIVE\n\
 QSO: 28000 CW 2014-10-05 2159 W1AW       949 ORAN      N2BJ       744 IL\n",
-    518, 11, { 0, 5, 11, 14, 25, 30, 41, 45, 55, 65, 70 },
+   518, 11, 97, { 0, 5, 11, 14, 25, 30, 41, 45, 55, 65, 70 },
     { 3, 9, 12, 23, 28, 39, 43, 53, 64, 68, 96}
   }
 };
@@ -607,6 +608,10 @@ TEST(CabrilloBasics, TableTests)
     EXPECT_EQ(test.numRows, t2.getNumRows());
     EXPECT_EQ(test.numRows, c1.getNumRows());
     EXPECT_EQ(test.numRows, c2.getNumRows());
+    EXPECT_EQ(test.maxWidth, t1.getMaxWidth());
+    EXPECT_EQ(test.maxWidth, t2.getMaxWidth());
+    EXPECT_EQ(test.maxWidth, c1.getMaxWidth());
+    EXPECT_EQ(test.maxWidth, c2.getMaxWidth());
     auto result = t1.tabulate(11u);
     EXPECT_EQ(result.size(),test.numRows);
     EXPECT_EQ(result[0].size(),11u);

@@ -22,13 +22,6 @@ public:
   explicit TableText(const std::string &text);
 
   /**
-   * @brief Create an object to convert the lines of text in @p lines.
-   * @param[in] lines  an ordered collection of text lines with no
-   *                   newline or tab characters
-   */
-  explicit TableText(const std::vector<std::string> &lines);
-
-  /**
    * @brief Create an object to convert the multiline string @p text
    *        into an array of text fields based on the column structure
    *        of the text.
@@ -46,12 +39,12 @@ public:
 
   std::size_t getNumRows() const noexcept
   {
-    return d_textLines.size();
+    return d_numRows;
   }
 
   std::size_t getMaxWidth() const noexcept
   {
-    return d_maxWidth;
+    return d_spaceCounts.size();
   }
 private:
   TableText() = delete;
@@ -59,10 +52,6 @@ private:
   /// Count the number of spaces per column
   void
   countSpaces();
-
-  /// Add the string defined by [begin, end) to the list of lines
-  void
-  addSubstring(const char *const begin, const char *const end);
 
   /// Return all the unique space counts
   std::vector<int>
@@ -73,15 +62,15 @@ private:
    *
    * Each entry does not have a newline character at the end.
    */
-  std::vector<std::string> d_textLines;
+  const std::string d_text;
 
   /**
    * @brief d_spaceCounts[i] holds the number of spaces in column i of all the text lines
    */
   std::vector<int> d_spaceCounts;
 
-  /// The maximum number of characters in any particular line
-  std::size_t d_maxWidth;
+  /// The number of lines in the table
+  std::size_t d_numRows;
 
   struct ColumnRange {
     std::size_t begin;          // the first column
@@ -91,6 +80,10 @@ private:
   void
   findColumns(const int                 minSpaceForColEnd,
               std::vector<ColumnRange> &table) const;
+
+  std::vector<std::string>
+  fieldsFromLine(const std::vector<ColumnRange> &table,
+                 const std::string &line) const;
 
   std::vector<std::vector<std::string>>
                                      copyColumns(const std::vector<ColumnRange> &table) const;

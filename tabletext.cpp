@@ -7,78 +7,50 @@
 
 using namespace cab;
 
-TableText::TableText(const std::vector<std::string> &lines)
-  : d_textLines(lines), d_maxWidth(0u)
-{
-  for(const auto &line : lines) {
-    if (line.length() > d_maxWidth) {
-      d_maxWidth = line.length();
-    }
-  }
-  countSpaces();
-}
-
 TableText::TableText(const std::string &multilineText)
-  : d_maxWidth(0u)
+  : d_text(multilineText),
+    d_numRows(0u)
 {
-  std::size_t cur(0u), next;
-  while (std::string::npos != (next = multilineText.find('\n', cur))) {
-    addSubstring(&(multilineText[cur]), &(multilineText[next]));
-    cur = next + 1;
-  }
-  const std::size_t len(multilineText.length());
-  if (cur < len) {
-    addSubstring(&(multilineText[cur]), &(multilineText[len]));
-  }
   countSpaces();
 }
 
 TableText::TableText(const char *multilineText)
-  : d_maxWidth(0u)
+  : d_text(multilineText),
+    d_numRows(0u)
 {
-  const char *cur=multilineText, *next;
-  while (nullptr != (next = std::strchr(cur, '\n'))) {
-    addSubstring(cur, next);
-    cur = next + 1;
-  }
-  const std::size_t len(std::strlen(cur));
-  if (len > 0u) {
-    addSubstring(cur, cur+len);
-  }
   countSpaces();
-}
-
-void
-TableText::addSubstring(const char *const begin, const char *const end)
-{
-  d_textLines.emplace_back(begin, end);
-  const std::size_t count(static_cast<std::size_t>(end-begin));
-  if (count > d_maxWidth) {
-    d_maxWidth = count;
-  }
 }
 
 void
 TableText::countSpaces()
 {
-  std::fill(d_spaceCounts.begin(),
-            d_spaceCounts.begin()+std::min(d_maxWidth, d_spaceCounts.size()),
-            0);
-  d_spaceCounts.resize(d_maxWidth,0);
-  for(const auto &line : d_textLines) {
-    std::size_t i(0u);
-    for(const char ch : line) {
-      if (' ' == ch) {
-        ++(d_spaceCounts[i]);
+  bool missingNewline = false;
+  std::size_t curCol(0u);
+  d_spaceCounts.reserve(128u);
+  for(const char ch : d_text) { // iterate through whole string
+    if ('\n' == ch) {
+      // increment row count and reset for next line
+      while(curCol < d_spaceCounts.size()) {
+        ++d_spaceCounts[curCol];
+        ++curCol;
       }
-      ++i;
+      ++d_numRows;
+      curCol = 0u;
+      missingNewline = true;
     }
-    // lines shorter than d_maxWidth are tested as though they are
-    // padded with spaces
-    while (i < d_maxWidth) {
-      ++(d_spaceCounts[i]);
-      ++i;
+    else {
+      if (curCol >= d_spaceCounts.size()) {
+        d_spaceCounts.resize(curCol+1, d_numRows);
+      }
+      if (' ' == ch) {
+        ++d_spaceCounts[curCol];
+      }
+      ++curCol;
+      missingNewline = false;
     }
+  }
+  if (!missingNewline) {
+    ++d_numRows;
   }
 }
 
@@ -106,27 +78,28 @@ void
 TableText::findColumns(const int                minSpaceForColEnd,
                        std::vector<ColumnRange> &table) const
 {
-  const int numLines(static_cast<int>(d_textLines.size()));
+  const std::size_t maxWidth(d_spaceCounts.size());
+  const int numLines(static_cast<int>(d_numRows));
   const int startColumnThreshold((3*numLines)/4);
   table.clear();
   std::size_t pos=0;
-  while (pos < d_maxWidth) {
+  while (pos < maxWidth) {
     ColumnRange cr;
     // find start
-    while ((pos < d_maxWidth) && (d_spaceCounts[pos] >= numLines)) {
+    while ((pos < maxWidth) && (d_spaceCounts[pos] >= numLines)) {
       ++pos;
     }
-    if (pos < d_maxWidth) {
+    if (pos < maxWidth) {
       int maxSpaces(startColumnThreshold);
       cr.begin = pos;
       // find end
-      while (pos < d_maxWidth) {
-        for(++pos; (pos < d_maxWidth) && (d_spaceCounts[pos] < minSpaceForColEnd); ++pos) {
+      while (pos < maxWidth) {
+        for(++pos; (pos < maxWidth) && (d_spaceCounts[pos] < minSpaceForColEnd); ++pos) {
           if (d_spaceCounts[pos] > maxSpaces) {
             maxSpaces = d_spaceCounts[pos];
           }
         }
-        if ((pos + 1) < d_maxWidth) {
+        if ((pos + 1) < maxWidth) {
           if ((d_spaceCounts[pos] >= numLines) && (d_spaceCounts[pos+1] >= numLines)) {
             // two consecutive columns of all spaces => column must be done
             break;
@@ -138,7 +111,7 @@ TableText::findColumns(const int                minSpaceForColEnd,
           }
         }
         else {
-          if ((pos < d_maxWidth) &&
+          if ((pos < maxWidth) &&
               ((d_spaceCounts[pos] <= startColumnThreshold)  ||
                (d_spaceCounts[pos] == numLines))) {
             break;
@@ -152,23 +125,36 @@ TableText::findColumns(const int                minSpaceForColEnd,
   }
 }
 
+std::vector<std::string>
+TableText::fieldsFromLine(const std::vector<ColumnRange> &table,
+                          const std::string &line) const
+{
+  std::vector<std::string> columnList;
+  columnList.reserve(table.size());
+  for(const ColumnRange &cr : table) {
+    if (cr.begin < line.size()) {
+      std::string newCol(cab::trim(line.substr(cr.begin, cr.end-cr.begin)));
+      columnList.push_back(newCol);
+    }
+    else {
+      columnList.push_back(std::string());
+    }
+  }
+  return std::move(columnList);
+}
+
 std::vector<std::vector<std::string>>
                                    TableText::copyColumns(const std::vector<ColumnRange> &table) const
 {
   std::vector<std::vector<std::string>> result;
-  result.reserve(d_textLines.size());
-  for(const std::string line : d_textLines) {
-    result.push_back(std::vector<std::string> {});
-    std::vector<std::string> &columnList(result.back());
-    for(const ColumnRange &cr : table) {
-      if (cr.begin < line.size()) {
-        std::string newCol(cab::trim(line.substr(cr.begin, cr.end-cr.begin)));
-        columnList.push_back(newCol);
-      }
-      else {
-        columnList.push_back(std::string());
-      }
-    }
+  result.reserve(d_numRows);
+  std::size_t cur(0u), next;
+  while (std::string::npos != (next = d_text.find('\n', cur))) {
+    result.push_back(std::move(fieldsFromLine(table, d_text.substr(cur, next-cur))));
+    cur = next+1;
+  }
+  if (cur < d_text.size()) {
+    result.push_back(std::move(fieldsFromLine(table, d_text.substr(cur))));
   }
   return std::move(result);
 }
