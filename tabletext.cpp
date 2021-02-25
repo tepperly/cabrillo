@@ -36,7 +36,6 @@ padShortLines(std::vector<int> &spaces, std::size_t curCol)
 void
 TableText::countSpaces()
 {
-  bool missingNewline = false;
   std::size_t curCol(0u);
   d_spaceCounts.reserve(128u);
   for(const char ch : d_text) { // iterate through whole string
@@ -45,7 +44,6 @@ TableText::countSpaces()
       // increment row count and reset for next line
       ++d_numRows;
       curCol = 0u;
-      missingNewline = false;
     }
     else {
       if (curCol >= d_spaceCounts.size()) {
@@ -55,10 +53,9 @@ TableText::countSpaces()
         ++d_spaceCounts[curCol];
       }
       ++curCol;
-      missingNewline = true;
     }
   }
-  if (missingNewline) {
+  if (!d_text.empty() && ('\n' != d_text.back())) {
     ++d_numRows;
   }
 }
