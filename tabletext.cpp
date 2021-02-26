@@ -60,14 +60,21 @@ TableText::countSpaces()
   }
 }
 
-std::vector<std::vector<std::string>>
-                                   TableText::tabulate(unsigned minCols) const
+std::vector<int>
+TableText::uniqueSpaceCounts() const
 {
   std::vector<int> spaces(d_spaceCounts);
   spaces.push_back(0);
   std::sort(spaces.begin(), spaces.end());
   auto it = std::unique(spaces.begin(), spaces.end());
   spaces.resize(std::distance(spaces.begin(), it));
+  return spaces;
+}
+
+TableText::RowAndColumnList
+TableText::tabulate(unsigned minCols) const
+{
+  std::vector<int> spaces(uniqueSpaceCounts());
   std::vector<ColumnRange> columns;
   columns.reserve(minCols);
   for(auto rit=spaces.rbegin(); rit != spaces.rend(); ++rit) {
@@ -152,7 +159,7 @@ TableText::fieldsFromLine(const std::vector<ColumnRange> &table,
 TableText::RowAndColumnList
 TableText::copyColumns(const std::vector<ColumnRange> &table) const
 {
-  std::vector<std::vector<std::string>> result;
+  RowAndColumnList result;
   result.reserve(d_numRows);
   std::size_t cur(0u), next;
   while (std::string::npos != (next = d_text.find('\n', cur))) {
